@@ -1,0 +1,3 @@
+# This file ensures the pdf_input directory is tracked by Git
+# Place your PDF files here for processing
+# The script will automatically detect PDF files in this folder

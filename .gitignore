@@ -57,6 +57,13 @@ openjdk-*.zip
 test_output/
 output/
 
+# Input/Output folder contents (keep folder structure, ignore files)
+pdf_input/*.pdf
+csv_output/*.csv
+# But keep the .gitkeep files
+!pdf_input/.gitkeep
+!csv_output/.gitkeep
+
 # OS generated files
 .DS_Store
 .DS_Store?
