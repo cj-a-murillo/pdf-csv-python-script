@@ -12,15 +12,18 @@ A Python tool that automatically extracts tables from PDF files and converts the
 
 ## ⚡ Quick Start (5 Commands)
 
+
 ```bash
-git clone <your-repo-url> && cd python-pdf-extract
+git clone https://github.com/cj-a-murillo/pdf-csv-python-script.git 
+cd python-pdf-extract
 python -m venv pdf_env
 .\pdf_env\Scripts\Activate.ps1     # Windows PowerShell
 pip install -r requirements.txt
-python pdf-extract.py              # Extract tables!
-```
 
 > **Note**: Install Java 11+ for full functionality: `winget install Microsoft.OpenJDK.11`
+
+python pdf-extract.py              # Extract tables!
+```
 
 ## ✨ Features
 
@@ -33,11 +36,45 @@ python pdf-extract.py              # Extract tables!
 - **🖱️ Interactive Mode**: Run without arguments for guided extraction
 - **🌐 Virtual Environment**: Complete isolated setup with Java integration
 
+## 📁 Folder Structure
+
+The script uses dedicated input and output folders for better organization:
+
+```
+pdf-csv-python-script/
+├── pdf_input/          # 📥 Place your PDF files here
+├── csv_output/         # 📤 CSV files will be saved here
+├── pdf-extract.py      # Main script
+├── requirements.txt    # Dependencies
+└── README.md          # This file
+```
+
+### 🎯 **How the Folder System Works:**
+
+**Input Location:**
+- **Place PDF files in:** `pdf_input/` folder
+- The script automatically detects all PDF files in this folder
+- No need to specify file paths in most cases
+
+**Output Location:**
+- **Find CSV results in:** `csv_output/` folder  
+- All extracted tables are saved here automatically
+- Files are named based on the original PDF filename
+- Multiple tables get numbered suffixes (e.g., `report_table_1.csv`, `report_table_2.csv`)
+
+**Benefits:**
+- ✅ **Clean organization:** Input and output files are separated
+- ✅ **Easy batch processing:** Drop multiple PDFs in input folder
+- ✅ **Predictable results:** Always know where CSV files will be saved
+- ✅ **No clutter:** Keeps the main directory clean
+
 ## 📝 TL;DR - Just Want to Extract Tables?
 
 1. **One-time setup**: `git clone repo → python -m venv pdf_env → activate → pip install -r requirements.txt`
-2. **Every time**: `activate virtual environment → python pdf-extract.py`
-3. **That's it!** CSV files are created automatically from any PDF tables found.
+2. **Place PDFs**: Put your PDF files in the `pdf_input/` folder
+3. **Extract**: `activate virtual environment → python pdf-extract.py`
+4. **Get results**: Find CSV files in the `csv_output/` folder
+5. **That's it!** Clean, organized workflow with dedicated input/output folders.
 
 ## 🚀 Complete Setup Guide (Start to Finish)
 
@@ -51,7 +88,7 @@ python pdf-extract.py              # Extract tables!
 #### Step 1: Get the Code
 ```bash
 # Clone the repository
-git clone <your-repo-url>
+git clone  https://github.com/cj-a-murillo/pdf-csv-python-script.git 
 cd python-pdf-extract
 
 # Or download and extract the ZIP file
@@ -252,9 +289,11 @@ pip install -r requirements.txt
 winget install Microsoft.OpenJDK.11
 
 # Day 1: First extraction
+# Step 1: Place your PDF in pdf_input/ folder
+# Step 2: Run extraction
 python pdf-extract.py
 # Output: Found PDF file: report.pdf
-# Output: Table saved to: report.csv
+# Output: Table saved to: csv_output/report.csv
 ```
 
 ### Scenario 2: Daily Usage
@@ -262,17 +301,24 @@ python pdf-extract.py
 # Every other day: Quick start
 cd python-pdf-extract
 .\pdf_env\Scripts\Activate.ps1
+
+# Step 1: Drop PDF files in pdf_input/ folder
+# Step 2: Extract with preview
 python pdf-extract.py --preview
-# Preview tables, then save
+# Preview tables, then save to csv_output/
 ```
 
 ### Scenario 3: Batch Processing
 ```bash
-# Process multiple PDFs
+# Process multiple PDFs from pdf_input/ folder
 .\pdf_env\Scripts\Activate.ps1
+
+# Place multiple PDFs in pdf_input/ folder, then:
 python pdf-extract.py report1.pdf
 python pdf-extract.py report2.pdf --pages "2,3"
 python pdf-extract.py financial_data.pdf --method camelot
+
+# All CSV files automatically saved to csv_output/ folder
 ```
 
 ### Scenario 4: Troubleshooting
@@ -282,6 +328,10 @@ python pdf-extract.py financial_data.pdf --method camelot
 python test_environment.py  # Check what's broken
 pip install --force-reinstall -r requirements.txt  # Fix packages
 java -version  # Check Java
+
+# Check folder structure
+ls pdf_input/    # Verify PDFs are here
+ls csv_output/   # Check extracted CSV files
 ```
 
 ## 🚨 Common Issues & Quick Fixes
@@ -308,9 +358,12 @@ brew install openjdk@11              # macOS
 
 ### ❌ "No PDF files found"
 ```bash
-# Make sure you have PDF files in the project directory
-ls *.pdf           # Check for PDF files
-# Or specify the file directly
+# Make sure you have PDF files in the pdf_input/ folder
+ls pdf_input/*.pdf     # Check for PDF files in input folder
+dir pdf_input\*.pdf    # Windows version
+
+# The script now looks in pdf_input/ folder by default
+# Place your PDFs there, or specify the file directly
 python pdf-extract.py /path/to/your/file.pdf
 ```
 

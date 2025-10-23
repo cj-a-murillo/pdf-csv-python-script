@@ -5,6 +5,10 @@ PDF Table Extractor
 This script extracts tables from PDF files and converts them to CSV format.
 It supports multiple methods for table extraction to handle different types of PDFs.
 
+Folder Structure:
+- pdf_input/  - Place your PDF files here
+- csv_output/ - CSV files will be saved here
+
 Requirements:
 - tabula-py
 - pandas
@@ -14,6 +18,7 @@ Requirements:
 Usage:
     python pdf-extract.py input.pdf output.csv
     python pdf-extract.py input.pdf  # Auto-generates output filename
+    python pdf-extract.py            # Interactive mode - searches pdf_input folder
 """
 
 import sys
@@ -43,13 +48,15 @@ def find_pdf_files_in_directory(directory=None):
     Find all PDF files in the specified directory.
     
     Args:
-        directory: Directory to search (defaults to current directory)
+        directory: Directory to search (defaults to pdf_input folder)
     
     Returns:
         List of PDF file paths
     """
     if directory is None:
-        directory = os.getcwd()
+        # Default to pdf_input folder in the script's directory
+        script_dir = Path(__file__).parent
+        directory = script_dir / "pdf_input"
     
     pdf_pattern = os.path.join(directory, "*.pdf")
     pdf_files = glob.glob(pdf_pattern)
@@ -58,7 +65,7 @@ def find_pdf_files_in_directory(directory=None):
 
 def select_pdf_file_automatically():
     """
-    Automatically select a PDF file from the current directory.
+    Automatically select a PDF file from the pdf_input directory.
     
     Returns:
         Path to selected PDF file or None if no files found
@@ -69,9 +76,11 @@ def select_pdf_file_automatically():
         return None
     elif len(pdf_files) == 1:
         print(f"Found PDF file: {pdf_files[0]}")
-        return pdf_files[0]
+        # Return full path to the file in pdf_input directory
+        script_dir = Path(__file__).parent
+        return str(script_dir / "pdf_input" / pdf_files[0])
     else:
-        print(f"Found {len(pdf_files)} PDF files:")
+        print(f"Found {len(pdf_files)} PDF files in pdf_input folder:")
         for i, pdf_file in enumerate(pdf_files, 1):
             print(f"  {i}. {pdf_file}")
         
@@ -81,11 +90,13 @@ def select_pdf_file_automatically():
                 if not choice:
                     selected = pdf_files[0]
                     print(f"Using: {selected}")
-                    return selected
+                    script_dir = Path(__file__).parent
+                    return str(script_dir / "pdf_input" / selected)
                 
                 choice_idx = int(choice) - 1
                 if 0 <= choice_idx < len(pdf_files):
-                    return pdf_files[choice_idx]
+                    script_dir = Path(__file__).parent
+                    return str(script_dir / "pdf_input" / pdf_files[choice_idx])
                 else:
                     print(f"Please enter a number between 1 and {len(pdf_files)}")
             except ValueError:
@@ -99,14 +110,14 @@ def get_pdf_file_path():
     Returns:
         Path to PDF file
     """
-    # First try to find PDF files in current directory
+    # First try to find PDF files in pdf_input directory
     auto_pdf = select_pdf_file_automatically()
     
     if auto_pdf:
         return auto_pdf
     
     # If no PDF files found, ask user for input
-    print("No PDF files found in current directory.")
+    print("No PDF files found in pdf_input directory.")
     pdf_file = input("Enter PDF file path: ").strip().strip('"')
     return pdf_file if pdf_file else None
 
@@ -213,7 +224,7 @@ class PDFTableExtractor:
     
     def save_tables_to_csv(self, tables, output_path=None, prefix="table"):
         """
-        Save extracted tables to CSV files.
+        Save extracted tables to CSV files in the csv_output folder.
         
         Args:
             tables: List of DataFrames
@@ -227,12 +238,23 @@ class PDFTableExtractor:
             print("No tables to save")
             return []
         
+        # Get the script directory and csv_output folder
+        script_dir = Path(__file__).parent
+        csv_output_dir = script_dir / "csv_output"
+        
+        # Ensure csv_output directory exists
+        csv_output_dir.mkdir(exist_ok=True)
+        
         saved_files = []
         
         if len(tables) == 1:
             # Single table
             if output_path is None:
-                output_path = self.pdf_path.with_suffix('.csv')
+                output_filename = self.pdf_path.stem + '.csv'
+                output_path = csv_output_dir / output_filename
+            else:
+                # If output_path is provided, put it in csv_output folder
+                output_path = csv_output_dir / Path(output_path).name
             
             output_path = Path(output_path)
             tables[0].to_csv(output_path, index=False)
@@ -240,22 +262,12 @@ class PDFTableExtractor:
             print(f"Table saved to: {output_path}")
             
         else:
-            # Multiple tables
-            if output_path is None:
-                output_dir = self.pdf_path.parent
-                base_name = self.pdf_path.stem
-            else:
-                output_path = Path(output_path)
-                if output_path.is_dir():
-                    output_dir = output_path
-                    base_name = self.pdf_path.stem
-                else:
-                    output_dir = output_path.parent
-                    base_name = output_path.stem
+            # Multiple tables - save to csv_output folder
+            base_name = self.pdf_path.stem
             
             for i, table in enumerate(tables, 1):
                 filename = f"{base_name}_{prefix}_{i}.csv"
-                file_path = output_dir / filename
+                file_path = csv_output_dir / filename
                 table.to_csv(file_path, index=False)
                 saved_files.append(file_path)
                 print(f"Table {i} saved to: {file_path}")
@@ -290,10 +302,10 @@ def main():
     # Get PDF file path - use provided argument or auto-detect
     pdf_file = args.pdf_file
     if not pdf_file:
-        print("No PDF file specified. Looking for PDF files in current directory...")
+        print("No PDF file specified. Looking for PDF files in pdf_input directory...")
         pdf_file = select_pdf_file_automatically()
         if not pdf_file:
-            print("No PDF files found and none specified.")
+            print("No PDF files found in pdf_input directory and none specified.")
             return 1
     
     try:
@@ -350,6 +362,8 @@ if __name__ == "__main__":
         # Interactive mode with auto-detection
         print("PDF Table Extractor")
         print("==================")
+        print("Looking for PDF files in pdf_input folder...")
+        print("CSV files will be saved to csv_output folder...")
         
         # Try to auto-detect PDF files first
         pdf_file = get_pdf_file_path()

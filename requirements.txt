@@ -14,7 +14,7 @@ jpype1>=1.4.0
 
 # Optional dependencies for advanced table detection
 # Uncomment the following lines if you want to use camelot-py
-# camelot-py[cv]>=0.10.0
+camelot-py[cv]>=0.10.0
 # opencv-python>=4.5.0
 
 # Additional utilities
