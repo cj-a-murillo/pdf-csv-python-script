@@ -190,11 +190,12 @@ python pdf-extract.py --preview
 # Extract from specific pages only
 python pdf-extract.py document.pdf --pages "1,2,3"
 
-# Using tabula to extract PDF to csv:
-python pdf-extract.py --preview --method tabula --pages "192,193"
+# Methods to extract pdf file:
+  # Using tabula to extract PDF to csv:
+  python pdf-extract.py --preview --method tabula --pages "192,193"
 
-# Using tabula to extract PDF to csv:
-python pdf-extract.py --preview --method camelot --pages "192,193"
+  # Using camelot to extract PDF to csv:
+  python pdf-extract.py --preview --method camelot --pages "192,193"
 
 # Show all available options
 python pdf-extract.py --help
